@@ -115,7 +115,7 @@ judge() {
 }
 chrony_install() {
     ${INS} -y install chrony
-    judge "安装 chrony 时间同步服务 "
+    #judge "安装 chrony 时间同步服务 "
 
     timedatectl set-ntp true
 
@@ -125,7 +125,7 @@ chrony_install() {
         systemctl enable chrony && systemctl restart chrony
     fi
 
-    judge "chronyd 启动 "
+    #judge "chronyd 启动 "
 
     timedatectl set-timezone Asia/Shanghai
 
