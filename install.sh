@@ -285,7 +285,7 @@ modify_nginx_port() {
 }
 modify_nginx_other() {
     sed -i "/server_name/c \\\tserver_name ${domain};" ${nginx_conf}
-    sed -i "/location/c \\\tlocation ${camouflage}" ${nginx_conf}
+    sed -i "/location \/ray/c \\\tlocation ${camouflage}" ${nginx_conf}
     sed -i "/proxy_pass/c \\\tproxy_pass http://127.0.0.1:${PORT};" ${nginx_conf}
     sed -i "/return/c \\\treturn 301 https://${domain}\$request_uri;" ${nginx_conf}
     #sed -i "27i \\\tproxy_intercept_errors on;"  ${nginx_dir}/conf/nginx.conf
@@ -468,7 +468,7 @@ acme() {
 }
 v2ray_conf_add_tls() {
     cd /etc/v2ray || exit
-    wget --no-check-certificate https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/${github_branch}/tls/config.json -O config.json
+    wget --no-check-certificate https://raw.githubusercontent.com/1309654031/V2Ray_ws-tls_bash_onekey/${github_branch}/tls/config.json -O config.json
     modify_path
     modify_alterid
     modify_inbound_port
@@ -476,7 +476,7 @@ v2ray_conf_add_tls() {
 }
 v2ray_conf_add_h2() {
     cd /etc/v2ray || exit
-    wget --no-check-certificate https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/${github_branch}/http2/config.json -O config.json
+    wget --no-check-certificate https://raw.githubusercontent.com/1309654031/V2Ray_ws-tls_bash_onekey/${github_branch}/http2/config.json -O config.json
     modify_path
     modify_alterid
     modify_inbound_port
@@ -509,9 +509,20 @@ nginx_conf_add() {
         ssl_protocols         TLSv1.3;
         ssl_ciphers           TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
         server_name           serveraddr.com;
-        index index.html index.htm;
-        root  /home/wwwroot;
-        error_page 400 = /400.html;
+	    
+        location / 
+        {
+        proxy_pass https://www.morinagamilk.co.jp;
+        proxy_redirect     off;
+        proxy_connect_timeout      75; 
+        proxy_send_timeout         90; 
+        proxy_read_timeout         90; 
+        proxy_buffer_size          4k; 
+        proxy_buffers              4 32k; 
+        proxy_busy_buffers_size    64k; 
+        proxy_temp_file_write_size 64k; 
+        }
+        
         location /ray/
         {
         proxy_redirect off;
@@ -580,7 +591,7 @@ nginx_process_disabled() {
 #    judge "rc.local 配置"
 #}
 acme_cron_update() {
-    wget -N -P /usr/bin --no-check-certificate "https://raw.githubusercontent.com/wulabing/V2Ray_ws-tls_bash_onekey/dev/ssl_update.sh"
+    wget -N -P /usr/bin --no-check-certificate "https://raw.githubusercontent.com/1309654031/V2Ray_ws-tls_bash_onekey/dev/ssl_update.sh"
     if [[ "${ID}" == "centos" ]]; then
         #        sed -i "/acme.sh/c 0 3 * * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
         #        &> /dev/null" /var/spool/cron/root
@@ -597,7 +608,7 @@ vmess_qr_config_tls_ws() {
     cat >$v2ray_qr_config_file <<-EOF
 {
   "v": "2",
-  "ps": "wulabing_${domain}",
+  "ps": "${domain}",
   "add": "${domain}",
   "port": "${port}",
   "id": "${UUID}",
@@ -615,7 +626,7 @@ vmess_qr_config_h2() {
     cat >$v2ray_qr_config_file <<-EOF
 {
   "v": "2",
-  "ps": "wulabing_${domain}",
+  "ps": "${domain}",
   "add": "${domain}",
   "port": "${port}",
   "id": "${UUID}",
