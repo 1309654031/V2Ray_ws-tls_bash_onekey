@@ -723,13 +723,12 @@ EOF
 
 tls_type() {
     if [[ -f "/etc/nginx/sbin/nginx" ]] && [[ -f "$nginx_conf" ]] && [[ "$shell_mode" == "ws" ]]; then
-        echo "请选择支持的 TLS 版本（default:3）:"
+        echo "请选择支持的 TLS 版本（default:2）:"
         echo "请注意,如果你使用 Quantaumlt X / 路由器 / 旧版 Shadowrocket / 低于 4.18.1 版本的 V2ray core 请选择 兼容模式"
         echo "1: TLS1.1 TLS1.2 and TLS1.3（兼容模式）"
         echo "2: TLS1.2 and TLS1.3 (兼容模式)"
         echo "3: TLS1.3 only"
-        read -rp "请输入：" tls_version
-        [[ -z ${tls_version} ]] && tls_version=3
+	tls_version=2
         if [[ $tls_version == 3 ]]; then
             sed -i 's/ssl_protocols.*/ssl_protocols         TLSv1.3;/' $nginx_conf
             echo -e "${OK} ${GreenBG} 已切换至 TLS1.3 only ${Font}"
